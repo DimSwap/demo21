@@ -1,42 +1,47 @@
 package com.example.demo21.domain;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
+
+
 @Entity
-@Table(name = "BOOKS")
-public class Book {
-    @Id
-    @Column(insertable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(name = "BOOK_TITLE")
-    @Size(min = 2,max = 30)
-    private String title;
-    @Column(name = "BOOK_ISBN")
-    private String isbn;
+@Table (name = "BOOKS")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+    public class Book {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "book_id", insertable = false, updatable = false)
+        private Long id;
 
-    public Long getId() {
-        return id;
-    }
+        @Column(name = "BOOK_TITLE")
+        @Size(min = 2, max = 30)
+        private String title;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+        @Column(name = "BOOK_ISBN")
+        private String isbn;
 
-    public String getTitle() {
-        return title;
-    }
+        @JsonIgnore
+        @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+        @JoinColumn(name = "author_id")
+        private Author author;
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+        @JsonIgnore
+        @ManyToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "publisher_id")
+        private Publisher publisher;
 
-    public String getIsbn() {
-        return isbn;
-    }
+        @JsonIgnore
+        @OneToMany( fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+        private List<Reward> rewards = new ArrayList<>();
 
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
+
+
 }

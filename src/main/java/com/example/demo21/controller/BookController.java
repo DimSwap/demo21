@@ -2,6 +2,7 @@ package com.example.demo21.controller;
 
 import com.example.demo21.domain.Book;
 import com.example.demo21.repository.RepositoryBook;
+import com.example.demo21.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -12,71 +13,66 @@ import java.util.List;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BookController {
 
-            private final RepositoryBook repository;
 
-            public BookController(RepositoryBook repository) {
-                this.repository = repository;
-            }
+    private final BookService bookService;
+    public BookController (BookService bookService) {
+        this.bookService = bookService;
+    }
 
-
-    //Операция сохранения юзера в базу данных
-    @PostMapping("/users")
+    @PostMapping("/book")
     @ResponseStatus(HttpStatus.CREATED)
-    public Book saveEmployee(@RequestBody Book book) {
-        return repository.save(book);
+    public Book saveBook(@RequestBody Book book) {
+        return bookService.saveBook(book);
     }
 
-    //Получение списка юзеров
-    @GetMapping("/users")
+    @PostMapping("/books")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<Book> saveBooks(@RequestBody List<Book> books) {
+        return bookService.saveBooks(books);
+    }
+
+    @PostMapping("/book/{book_id}/author/{author_id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Book addAuthorToBook (@PathVariable Long book_id,@PathVariable Long author_id) {
+        return bookService.addAuthorToBook(author_id,book_id);
+    }
+
+    @PostMapping("/book/{book_id}/publisher/{publisher_id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Book addPublisherToBook (@PathVariable Long book_id,@PathVariable Long publisher_id) {
+        return bookService.addPublisherToBook(publisher_id, book_id);
+    }
+
+    @PostMapping("/book/{book_id}/reward/{reward_id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Book addRewardToBook (@PathVariable Long book_id,@PathVariable Long reward_id) {
+        return bookService.addRewardToBook(reward_id,book_id);
+    }
+
+    @GetMapping("/books")
     @ResponseStatus(HttpStatus.OK)
-    public List<Book> getAllUsers() {
-        return repository.findAll();
+    public List<Book> getAllBooks() {
+        return bookService.getAllBooks();
     }
 
-    //Получения юзера по id
-    @GetMapping("/users/{id}")
+    @GetMapping("/book/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Book getEmployeeById(@PathVariable Long id) {
-
-        Book book = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
-
-        /*if (employee.getIsDeleted()) {
-            throw new EntityNotFoundException("Employee was deleted with id = " + id);
-        }*/
-
-        return book;
+    public Book getBookById(@PathVariable Long id) {
+        return bookService.getBookById(id);
     }
 
-    //Обновление юзера
-    @PutMapping("/users/{id}")
+    @PutMapping("/book/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Book refreshEmployee(@PathVariable("id") Long id, @RequestBody Book book) {
-
-        return repository.findById(id)
-                .map(entity -> {
-                    entity.setIsbn(book.getIsbn());
-                    entity.setTitle(book.getTitle());
-                    return repository.save(entity);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
+    public Book updateBook(@PathVariable("id") Long id, @RequestBody Book book) {
+        return bookService.updateBook(id,book);
     }
 
-    //Удаление по id
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/book/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeEmployeeById(@PathVariable Long id) {
-        //repository.deleteById(id);
-       Book book = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
-        //employee.setIsDeleted(true);
-        repository.delete(book);//save(employee);
+    public String deleteBook(@PathVariable Long id) {
+        return bookService.deleteBook(id);
+
     }
 
-    //Удаление всех юзеров
-    @DeleteMapping("/users")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeAllUsers() {
-        repository.deleteAll();
-    }
+
 }

@@ -1,53 +1,47 @@
 package com.example.demo21.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
-import java.util.Date;
+import java.util.*;
 
 @Entity
-@Table(name = "AUTORS")
+@Table(name = "AUTHORS")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Author {
     @Id
-    @Column(insertable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "author_id", insertable = false, updatable = false)
     private Long id;
-    @Column(name = "FIRST_NAME")
+    @Column(name = "AUTHOR_FIRST_NAME")
     private String firstName;
-    @Column(name = "LAST_NAME")
+    @Column(name = "AUTHOR_LAST_NAME")
     private String lastName;
-    @Column(name = "BIRTH_DATE")
-    private Date birthdate;
+    @Column(name = "AUTHOR_BIRTHDAY")
+    private Date  birthdate;
+    @Column(name = "AUTHOR_SEX")
+    private String sex;
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @JsonIgnore
+    @OneToMany( fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Book> books = new ArrayList<>();
 
-    public String getFirstName() {
-        return firstName;
-    }
+    @JsonIgnore
+    @OneToMany (fetch = FetchType.EAGER, cascade =  CascadeType.ALL)
+    private List <Reward> rewards = new ArrayList<>();
+    @JsonIgnore
+    @ManyToOne (fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Publisher publisher;
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
 
-    public String getLastName() {
-        return lastName;
-    }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
 
-    public Date getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(Date birthdate) {
-        this.birthdate = birthdate;
-    }
 
 
 
